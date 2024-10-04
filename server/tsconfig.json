@@ -1,0 +1,9 @@
+{
+    "compilerOptions": {
+        // ... other options
+        "outDir": "../dist/server"
+    },
+    "include": [
+        "src/**/*"
+    ]
+}

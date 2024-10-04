@@ -14,6 +14,14 @@ const nextConfig = {
     }
     return config;
   },
+  async rewrites() {
+    return [
+      {
+        source: "/api/socket/:path*",
+        destination: "http://localhost:3001/:path*",
+      },
+    ];
+  },
 };
 
 export default nextConfig;

@@ -1,4 +1,4 @@
-// File: /src/app/hooks/useGameState.js
+// File: src/app/hooks/useGameState.js
 
 import { useState, useEffect } from "react";
 import io from "socket.io-client";
@@ -10,69 +10,59 @@ const useGameState = () => {
     gameCode: null,
     players: [],
     currentRound: 0,
+    isHost: false,
+    currentPrompt: "",
   });
 
   useEffect(() => {
     const initSocket = async () => {
+      await fetch("/api/socket");
       const newSocket = io({
         path: "/api/socket",
       });
-
-      setSocket(newSocket);
 
       newSocket.on("connect", () => {
         console.log("Connected to server");
       });
 
-      newSocket.on("playerJoined", ({ playerName }) => {
-        console.log(`Player joined: ${playerName}`);
-        setGameState((prev) => ({
-          ...prev,
-          players: [...prev.players, { name: playerName }],
-        }));
+      newSocket.on("gameState", (newState) => {
+        console.log("Received new game state:", newState);
+        setGameState(newState);
       });
 
-      newSocket.on("gameCreated", ({ gameCode }) => {
-        console.log(`Game created: ${gameCode}`);
-        setGameState((prev) => ({ ...prev, gameCode }));
+      newSocket.on("error", (error) => {
+        console.error("Socket error:", error);
       });
 
-      newSocket.on("gameStarted", () => {
-        console.log("Game started");
-        setGameState((prev) => ({ ...prev, stage: "drawing" }));
-      });
-
-      newSocket.on("connect_error", (error) => {
-        console.error("Connection error:", error);
-      });
-
-      return () => newSocket.close();
+      setSocket(newSocket);
     };
 
     initSocket();
+
+    return () => {
+      if (socket) {
+        socket.disconnect();
+      }
+    };
   }, []);
 
-  const joinGame = (gameCode, playerName) => {
-    console.log(`Joining game: ${gameCode} as ${playerName}`);
-    socket?.emit("joinGame", { gameCode, playerName });
-  };
-
   const createGame = (playerName) => {
-    console.log(`Creating game as ${playerName}`);
     socket?.emit("createGame", { playerName });
   };
 
-  const startGame = () => {
-    console.log(`Starting game: ${gameState.gameCode}`);
-    socket?.emit("startGame", { gameCode: gameState.gameCode });
+  const joinGame = (gameCode, playerName) => {
+    socket?.emit("joinGame", { gameCode, playerName });
   };
 
-  return {
-    gameState,
-    joinGame,
-    createGame,
-    startGame,
+  const startGame = () => {
+    socket?.emit("startGame");
   };
+
+  const submitEntry = (entry) => {
+    socket?.emit("submitEntry", { entry });
+  };
+
+  return { gameState, createGame, joinGame, startGame, submitEntry };
 };
 
 export default useGameState;
