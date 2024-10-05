@@ -1,43 +1,33 @@
 "use client";
-import React, { useRef, useEffect, useState } from "react";
-import { Box, Button, Flex } from "@radix-ui/themes";
+import React, { useRef, useEffect } from "react";
+import { Box, Text, Button } from "@radix-ui/themes";
 
 interface DrawingCanvasProps {
   prompt: string;
-  onSubmit: (drawingData: string) => void;
+  onSubmit: (imageData: string) => void;
 }
 
-export default function DrawingCanvas({
-  prompt,
-  onSubmit,
-}: DrawingCanvasProps) {
+const DrawingCanvas: React.FC<DrawingCanvasProps> = ({ prompt, onSubmit }) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
   useEffect(() => {
-    const canvas = canvasRef.current;
-    if (canvas) {
-      const ctx = canvas.getContext("2d");
-      // Set up canvas drawing here
-    }
+    // Initialize canvas
   }, []);
 
   const handleSubmit = () => {
     if (canvasRef.current) {
-      const drawingData = canvasRef.current.toDataURL();
-      onSubmit(drawingData);
+      const imageData = canvasRef.current.toDataURL();
+      onSubmit(imageData);
     }
   };
 
   return (
-    <div>
-      <h3>Draw: {prompt}</h3>
-      <canvas
-        ref={canvasRef}
-        width={400}
-        height={400}
-        style={{ border: "1px solid black" }}
-      />
-      <button onClick={handleSubmit}>Submit Drawing</button>
-    </div>
+    <Box>
+      <Text size="3">Please draw: {prompt}</Text>
+      <canvas ref={canvasRef} width={300} height={300} />
+      <Button onClick={handleSubmit}>Done</Button>
+    </Box>
   );
-}
+};
+
+export default DrawingCanvas;

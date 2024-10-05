@@ -1,29 +1,28 @@
 import React from "react";
-import { Button, Heading, Text, Flex, Avatar } from "@radix-ui/themes";
+import { Box, Text, Button, Flex } from "@radix-ui/themes";
 
-const GameLobby = ({ gameState, onStart }) => {
+interface GameLobbyProps {
+  players: string[];
+  isHost: boolean;
+  onStartGame: () => void;
+}
+
+const GameLobby: React.FC<GameLobbyProps> = ({
+  players,
+  isHost,
+  onStartGame,
+}) => {
   return (
-    <Flex direction="column" gap="4">
-      <Heading size="6">Game Lobby - Code: {gameState.gameCode}</Heading>
-      <Flex gap="2" wrap="wrap">
-        {gameState.players.map((player, index) => (
-          <Flex key={index} direction="column" align="center" gap="1">
-            <Avatar
-              fallback={player.name[0]}
-              src={player.avatar}
-              alt={player.name}
-            />
-            <Text size="1">{player.name}</Text>
-          </Flex>
+    <Box>
+      <Text size="5">Drawphone</Text>
+      <Text size="2">Waiting for players...</Text>
+      <Flex direction="column" gap="2">
+        {players.map((player, index) => (
+          <Text key={index}>{player}</Text>
         ))}
       </Flex>
-      {gameState.isHost && (
-        <Button onClick={onStart} disabled={gameState.players.length < 4}>
-          Start Game ({gameState.players.length}/4 players)
-        </Button>
-      )}
-      {!gameState.isHost && <Text>Waiting for host to start the game...</Text>}
-    </Flex>
+      {isHost && <Button onClick={onStartGame}>Start Game</Button>}
+    </Box>
   );
 };
 

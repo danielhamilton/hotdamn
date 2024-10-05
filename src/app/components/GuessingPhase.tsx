@@ -1,31 +1,41 @@
-import { useState } from "react";
+import React, { useState } from "react";
+import { Box, Text, TextField, Button } from "@radix-ui/themes";
 
 interface GuessingPhaseProps {
-  onSubmit: (guess: string) => void;
+  drawing: string;
+  onComplete: (guess: string) => void;
+  correctAnswer: string;
 }
 
-export default function GuessingPhase({ onSubmit }: GuessingPhaseProps) {
+export function GuessingPhase({
+  drawing,
+  onComplete,
+  correctAnswer,
+}: GuessingPhaseProps) {
   const [guess, setGuess] = useState("");
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    onSubmit(guess);
+  const handleSubmit = () => {
+    onComplete(guess);
   };
 
   return (
-    <div>
-      <h3>Guess the Drawing</h3>
-      {/* Display the drawing here */}
-      <form onSubmit={handleSubmit}>
-        <input
-          type="text"
+    <Box>
+      <Text size="5" weight="bold">
+        Guess the Drawing
+      </Text>
+      <img
+        src={drawing}
+        alt="Drawing to guess"
+        style={{ maxWidth: "100%", border: "1px solid #ccc" }}
+      />
+      <TextField.Root>
+        <TextField.Slot
           value={guess}
           onChange={(e) => setGuess(e.target.value)}
           placeholder="Enter your guess"
-          required
         />
-        <button type="submit">Submit Guess</button>
-      </form>
-    </div>
+      </TextField.Root>
+      <Button onClick={handleSubmit}>Submit Guess</Button>
+    </Box>
   );
 }

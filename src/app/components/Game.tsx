@@ -1,18 +1,12 @@
 "use client";
 import React, { useState, useEffect } from "react";
-import useGameState from "../hooks/useGameState";
-import GameLobby from "./GameLobby";
+import { useGameState } from "../hooks/useGameState";
+import { socket } from "../api/socket";
+import { Lobby } from "./Lobby";
 import DrawingCanvas from "./DrawingCanvas";
-
-import {
-  Button,
-  TextField,
-  Heading,
-  Text,
-  Flex,
-  Box,
-  Container,
-} from "@radix-ui/themes";
+import { GuessingPhase } from "./GuessingPhase";
+import { ResultsDisplay } from "./ResultsDisplay";
+import { PracticeMode } from "./PracticeMode";
 
 interface GameProps {
   playerName: string;
@@ -20,112 +14,116 @@ interface GameProps {
 }
 
 export default function Game({ playerName, gameCode }: GameProps) {
-  const [gamePhase, setGamePhase] = useState("waiting");
-  const { gameState, createGame, joinGame, startGame, submitEntry } =
-    useGameState();
-  const [currentEntry, setCurrentEntry] = useState("");
-  const [error, setError] = useState(null);
+  console.log("Game component:", { playerName, gameCode }); // Add this line
+  const { gameState, createGame, joinGame, startGame } = useGameState();
+  const [aiPlayerCount, setAiPlayerCount] = useState(3);
+  const [aiDifficulty, setAiDifficulty] = useState<"easy" | "medium" | "hard">(
+    "medium",
+  );
+  const [isPracticeMode, setIsPracticeMode] = useState(false);
 
   useEffect(() => {
-    // Here you would set up your socket connection to the backend
-    // and listen for game updates
+    // Join the game when the component mounts
+    joinGame(gameCode, playerName);
+  }, []);
+
+  useEffect(() => {
+    socket.on("newRoundStarted", (updatedGame) => {
+      updateGameState({ ...updatedGame, currentPhase: "drawing" });
+    });
+
+    socket.on("startGuessingPhase", (updatedGame) => {
+      updateGameState({ ...updatedGame, currentPhase: "guessing" });
+    });
+
+    socket.on("roundResults", (results) => {
+      updateGameState({ currentPhase: "results", results });
+    });
+
+    return () => {
+      socket.off("newRoundStarted");
+      socket.off("startGuessingPhase");
+      socket.off("roundResults");
+    };
   }, []);
 
   const handleCreateGame = () => {
-    if (playerName.trim()) {
-      createGame(playerName.trim());
-      setError(null);
-    } else {
-      setError("Please enter a player name");
+    const playerName = prompt("Enter your name");
+    if (playerName) {
+      createGame(playerName, aiPlayerCount, aiDifficulty);
     }
   };
 
-  const handleJoinGame = () => {
-    if (playerName.trim() && gameCode.trim()) {
-      joinGame(gameCode.trim(), playerName.trim());
-      setError(null);
-    } else {
-      setError("Please enter both player name and game code");
-    }
-  };
+  if (isPracticeMode) {
+    return <PracticeMode onExit={() => setIsPracticeMode(false)} />;
+  }
 
-  const handleStartGame = () => {
-    startGame();
-  };
+  if (!gameState.gameCode) {
+    return (
+      <div>
+        <h1>Welcome to the Game</h1>
+        <div>
+          <label>
+            Number of AI players:
+            <input
+              type="number"
+              min="1"
+              max="7"
+              value={aiPlayerCount}
+              onChange={(e) => setAiPlayerCount(parseInt(e.target.value))}
+            />
+          </label>
+        </div>
+        <div>
+          <label>
+            AI Difficulty:
+            <select
+              value={aiDifficulty}
+              onChange={(e) =>
+                setAiDifficulty(e.target.value as "easy" | "medium" | "hard")
+              }
+            >
+              <option value="easy">Easy</option>
+              <option value="medium">Medium</option>
+              <option value="hard">Hard</option>
+            </select>
+          </label>
+        </div>
+        <button onClick={handleCreateGame}>Create Game</button>
+        <button onClick={() => setIsPracticeMode(true)}>Practice Mode</button>
+      </div>
+    );
+  }
 
-  const handleSubmitEntry = () => {
-    if (currentEntry.trim()) {
-      submitEntry(currentEntry.trim());
-      setCurrentEntry("");
-    } else {
-      setError("Please enter a phrase or complete your drawing");
-    }
-  };
-
-  const renderJoinCreate = () => (
-    <Flex direction="column" gap="4">
-      <TextField.Root>
-        <TextField.Slot
-          placeholder="Enter your name"
-          value={playerName}
-          onChange={(e) => setPlayerName(e.target.value)}
-        />
-      </TextField.Root>
-      <Button onClick={handleCreateGame}>Create New Game</Button>
-      <Flex gap="2">
-        <TextField.Root style={{ flexGrow: 1 }}>
-          <TextField.Slot
-            placeholder="Enter game code"
-            value={gameCode}
-            onChange={(e) => setGameCode(e.target.value)}
-          />
-        </TextField.Root>
-        <Button onClick={handleJoinGame}>Join Game</Button>
-      </Flex>
-    </Flex>
-  );
-
-  const renderGameContent = () => {
-    switch (gameState.stage) {
-      case "lobby":
-        return <GameLobby gameState={gameState} onStart={handleStartGame} />;
-      case "writing":
-        return (
-          <Flex direction="column" gap="2">
-            <Heading size="6">Write a phrase:</Heading>
-            <TextField.Root>
-              <TextField.Slot
-                placeholder="Type your phrase here"
-                value={currentEntry}
-                onChange={(e) => setCurrentEntry(e.target.value)}
-              />
-            </TextField.Root>
-            <Button onClick={handleSubmitEntry}>Submit Phrase</Button>
-          </Flex>
-        );
-      case "drawing":
-        return (
-          <Flex direction="column" gap="2">
-            <Heading size="6">Draw: {gameState.currentPrompt}</Heading>
-            <DrawingCanvas onSave={(imageData) => setCurrentEntry(imageData)} />
-            <Button onClick={handleSubmitEntry}>Submit Drawing</Button>
-          </Flex>
-        );
-      case "gameOver":
-        return <Text>Game Over! Results will be displayed here.</Text>;
-      default:
-        return <Text>Waiting for game to start...</Text>;
-    }
-  };
-
-  return (
-    <Container size="2">
-      {!gameState.gameCode ? renderJoinCreate() : renderGameContent()}
-      {error && (
-        <Box mt="4" style={{ color: "red" }}>
-          <Text>{error}</Text>
-        </Box>
-      )}
-    </Container>
-  );
+  switch (gameState.currentPhase) {
+    case "lobby":
+      return <Lobby gameState={gameState} onStartGame={startGame} />;
+    case "drawing":
+      return <DrawingCanvas />;
+    case "guessing":
+      return <GuessingPhase />;
+    case "results":
+      return (
+        <ResultsDisplay results={gameState.results} onNextRound={startGame} />
+      );
+    default:
+      return <div>Loading...</div>;
+  }
 }
+
+const handleJoinGame = async (name: string, code: string) => {
+  try {
+    // Here, you would typically make an API call to join the game
+    // For now, we'll simulate it with a timeout
+    await new Promise((resolve) => setTimeout(resolve, 1000));
+    console.log(`Joining game with name: ${name} and code: ${code}`);
+    // Update your app state here (e.g., set the current player, game state, etc.)
+    // For example:
+    // setCurrentPlayer(name);
+    // setGameCode(code);
+    // setGameState('lobby');
+  } catch (error) {
+    console.error("Error joining game:", error);
+    throw error; // Re-throw the error so the JoinGame component can handle it
+  }
+};
