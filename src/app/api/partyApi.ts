@@ -15,10 +15,10 @@ export const joinParty = async (partyCode: string) => {
 };
 
 export const startParty = async () => {
-  console.log("Calling startParty API"); // Debug log
+  console.log("Calling startParty API");
   try {
     const response = await axios.post(`${API_BASE_URL}/start-party`);
-    console.log("API response:", response.data); // Debug log
+    console.log("API response:", response.data);
     return response.data;
   } catch (error) {
     console.error("Error in startParty API call:", error);

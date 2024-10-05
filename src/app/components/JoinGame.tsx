@@ -23,13 +23,11 @@ const JoinGame: React.FC<JoinGameProps> = ({ onBack }) => {
 
   return (
     <Flex direction="column" gap="4">
-      <TextField.Root>
-        <TextField.Input
-          placeholder="Enter party code"
-          value={partyCode}
-          onChange={(e) => setPartyCode(e.target.value)}
-        />
-      </TextField.Root>
+      <TextField.Root
+        placeholder="Enter party code"
+        value={partyCode}
+        onChange={(e) => setPartyCode(e.target.value)}
+      ></TextField.Root>
       <Button onClick={handleJoin}>Join</Button>
       <Button onClick={onBack} variant="soft">
         Back
