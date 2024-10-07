@@ -1,3 +1,9 @@
+import Typography from "@/components/Typography";
+
 export default function Home() {
-  return <div className="text-3xl font-bold">Hello There!</div>;
+  return (
+    <div className="p-8">
+      <Typography />
+    </div>
+  );
 }

@@ -17,11 +17,73 @@
 body {
   color: var(--foreground);
   background: var(--background);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: "SupplySans", sans-serif;
+}
+
+code {
+  font-family: "SupplyMono", monospace;
 }
 
 @layer utilities {
   .text-balance {
     text-wrap: balance;
   }
+}
+
+/* SupplyMono Font Family */
+@font-face {
+  font-family: "SupplyMono";
+  src: url("/fonts/SupplyMono/PPSupplyMono-Regular.woff2") format("woff2");
+  font-weight: 400;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "SupplyMono";
+  src: url("/fonts/SupplyMono/PPSupplyMono-Medium.woff2") format("woff2");
+  font-weight: 500;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "SupplyMono";
+  src: url("/fonts/SupplyMono/PPSupplyMono-Bold.woff2") format("woff2");
+  font-weight: 700;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "SupplyMono";
+  src: url("/fonts/SupplyMono/PPSupplyMono-Ultralight.woff2") format("woff2");
+  font-weight: 200;
+  font-style: normal;
+}
+
+/* SupplySans Font Family */
+@font-face {
+  font-family: "SupplySans";
+  src: url("/fonts/SupplySans/PPSupplySans-Regular.woff2") format("woff2");
+  font-weight: 400;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "SupplySans";
+  src: url("/fonts/SupplySans/PPSupplySans-Medium.woff2") format("woff2");
+  font-weight: 500;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "SupplySans";
+  src: url("/fonts/SupplySans/PPSupplySans-Bold.woff2") format("woff2");
+  font-weight: 700;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "SupplySans";
+  src: url("/fonts/SupplySans/PPSupplySans-Ultralight.woff2") format("woff2");
+  font-weight: 200;
+  font-style: normal;
 }
