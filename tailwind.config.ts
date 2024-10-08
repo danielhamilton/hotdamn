@@ -8,12 +8,14 @@ const config: Config = {
   ],
   theme: {
     extend: {
-      colors: {
-        background: "var(--background)",
-        foreground: "var(--foreground)",
+      width: {
+        "2/24": "8.333333%",
+        "16/24": "66.666667%",
+        "6/24": "25%",
       },
     },
   },
   plugins: [],
+  darkMode: "class",
 };
 export default config;

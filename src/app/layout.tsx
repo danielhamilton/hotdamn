@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
-
 import "./globals.css";
 import "@radix-ui/themes/styles.css";
 import { Theme, ThemePanel } from "@radix-ui/themes";
+import ClientLayout from "../components/ClientLayout";
 
 export const metadata: Metadata = {
   title: "Hot Damn!",
@@ -20,10 +20,10 @@ export default function RootLayout({
         <Theme
           accentColor="tomato"
           grayColor="sand"
-          radius="small"
+          radius="full"
           scaling="100%"
         >
-          {children}
+          <ClientLayout>{children}</ClientLayout>
           <ThemePanel />
         </Theme>
       </body>
