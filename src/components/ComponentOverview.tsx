@@ -11,11 +11,15 @@ import {
   SegmentedControl,
 } from "@radix-ui/themes";
 import { BookmarkIcon } from "@radix-ui/react-icons";
+import { Component } from "lucide-react";
 
 export default function ComponentOverview() {
   return (
     <div className="p-8">
-      <h1 className="mb-8 text-2xl font-bold">Component Overview</h1>
+      <h1 className="mb-8 flex items-center gap-2 text-2xl font-bold">
+        <Component size={24} strokeWidth={1} absoluteStrokeWidth />
+        Component Overview
+      </h1>
 
       <h2 className="mb-4 font-mono text-xl">SupplyMono</h2>
       <div className="mb-8 font-mono">
