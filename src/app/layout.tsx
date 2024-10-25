@@ -1,33 +1,69 @@
+"use client";
+
 import type { Metadata } from "next";
 import { GeistSans } from "geist/font/sans";
 import { GeistMono } from "geist/font/mono";
 
 import "@radix-ui/themes/styles.css";
-import "./globals.css";
-import { ThemeProvider } from "./ThemeContext";
-import { Theme } from "@radix-ui/themes";
-import { ThemeWrapper } from "./components/ThemeWrapper";
-import Header from "./components/Header";
-import Footer from "./components/Footer";
+import { Theme, ThemePanel } from "@radix-ui/themes";
+import ToggleTheme from "./components/ToggleTheme";
+import { useEffect, useState } from "react";
 
-export const metadata: Metadata = {
-  title: "HotDamn!Fun",
-  description: "An exciting multiplayer drawing and guessing game",
-};
+const geistSans = localFont({
+  src: "./fonts/GeistVF.woff",
+  variable: "--font-geist-sans",
+  weight: "100 900",
+});
+const geistMono = localFont({
+  src: "./fonts/GeistMonoVF.woff",
+  variable: "--font-geist-mono",
+  weight: "100 900",
+});
 
 export default function RootLayout({
   children,
 }: {
   children: React.ReactNode;
-}) {
+}>) {
+  const [theme, setTheme] = useState<"light" | "dark">("light");
+
+  useEffect(() => {
+    const savedTheme = localStorage.getItem("theme") as "light" | "dark" | null;
+    if (savedTheme) {
+      setTheme(savedTheme);
+      document.documentElement.classList.toggle("dark", savedTheme === "dark");
+    }
+  }, []);
+
+  useEffect(() => {
+    const handleStorageChange = () => {
+      const newTheme = localStorage.getItem("theme") as "light" | "dark" | null;
+      if (newTheme) {
+        setTheme(newTheme);
+        document.documentElement.classList.toggle("dark", newTheme === "dark");
+      }
+    };
+
+    window.addEventListener("storage", handleStorageChange);
+    return () => window.removeEventListener("storage", handleStorageChange);
+  }, []);
+
   return (
-    <html lang="en">
-      <body>
-        <ThemeProvider>
-          <Theme appearance="dark" accentColor="blue">
-            {children}
-          </Theme>
-        </ThemeProvider>
+    <html lang="en" className={theme}>
+      <body
+        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+      >
+        <Theme
+          accentColor="yellow"
+          grayColor="sand"
+          radius="small"
+          scaling="95%"
+          appearance={theme}
+        >
+          {children}
+          <ToggleTheme />
+          <ThemePanel />
+        </Theme>
       </body>
     </html>
   );
