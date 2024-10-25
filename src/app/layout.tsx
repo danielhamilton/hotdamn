@@ -1,9 +1,8 @@
 "use client";
 
 import type { Metadata } from "next";
-import { GeistSans } from "geist/font/sans";
-import { GeistMono } from "geist/font/mono";
-
+import localFont from "next/font/local";
+import "./globals.css";
 import "@radix-ui/themes/styles.css";
 import { Theme, ThemePanel } from "@radix-ui/themes";
 import ToggleTheme from "./components/ToggleTheme";
@@ -22,7 +21,7 @@ const geistMono = localFont({
 
 export default function RootLayout({
   children,
-}: {
+}: Readonly<{
   children: React.ReactNode;
 }>) {
   const [theme, setTheme] = useState<"light" | "dark">("light");
