@@ -1,6 +1,7 @@
 "use client";
 
-import type { Metadata } from "next";
+// Remove or comment out the unused import
+// import type { Metadata } from "next";
 import localFont from "next/font/local";
 import "./globals.css";
 import "@radix-ui/themes/styles.css";
@@ -61,7 +62,7 @@ export default function RootLayout({
         >
           {children}
           <ToggleTheme />
-          <ThemePanel />
+          {/* <ThemePanel /> */}
         </Theme>
       </body>
     </html>

@@ -3,6 +3,8 @@ import localFont from "next/font/local";
 import { Container, Heading, Flex } from "@radix-ui/themes";
 import "@radix-ui/themes/styles.css";
 import { Poem } from "./components/Poem";
+import Link from "next/link";
+import { Button } from "@radix-ui/themes";
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -17,7 +19,11 @@ const geistMono = localFont({
 
 export default function Home() {
   return (
-    <div className={`${geistSans.variable} ${geistMono.variable}`}>
+    <main className="flex min-h-screen flex-col items-center justify-between p-24">
+      <h1>Welcome to HotDamn</h1>
+      <Link href="/games/whazzat">
+        <Button size="3">Play Whazzat</Button>
+      </Link>
       <Container size="3" py="9">
         <Heading size="3" mb="4" weight="medium">
           Poems
@@ -47,6 +53,6 @@ export default function Home() {
           />
         </Flex>
       </Container>
-    </div>
+    </main>
   );
 }
